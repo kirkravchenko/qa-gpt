@@ -1,43 +1,24 @@
-from selenium.webdriver.common.by import By
-import main
-
 actions = ["click", "verify", "check", "open", "close"]
 verifications = ["displayed", "not displayed"]
 
 
-def action_inputs(step, widget_components):
-    by = get_by(step, widget_components)
+def action_inputs(step, components):
+    by = get_by(step, components)
     action_literal = extract_action(step)
     verification_literal = extract_verification(step)
     return by, action_literal, verification_literal
 
 
-def get_by(step, widget_components):
-    element = extract_element(step, widget_components)
-    return match_element(element)
+def get_by(step, components):
+    element_literal = extract_element(step, components)
+    return match_element_get_by(element_literal, components)
 
 
-def match_action(action, by, verification=""):
-    web_element = main.driver.find_element(by=by[0], value=by[1])
-    match action:
-        case "click":
-            web_element.click()
-        case "verify":
-            match_verification(web_element, verification)
-
-
-def match_element(element):
-    match element:
-        case "tooltip":
-            return (
-                By.CSS_SELECTOR,
-                "div.by-line-tooltip"
-            )
-        case "medically reviewed":
-            return (
-                By.CSS_SELECTOR,
-                ".by-line__verified-wrapper--medically-reviewed"
-            )
+def match_element_get_by(element_literal, components):
+    for component in components:
+        expected_literal, by, selector = component
+        if element_literal is expected_literal:
+            return by, selector
 
 
 def match_verification(web_element, verification):
@@ -54,8 +35,9 @@ def extract_action(step):
 
 def extract_element(step, components):
     for element in components:
-        if element in str(step).lower():
-            return element
+        element_literal = element[0]
+        if element_literal in str(step).lower():
+            return element_literal
 
 
 def extract_verification(step):

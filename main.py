@@ -58,13 +58,17 @@ def get_scenario_from(path):
 
 
 def close_pop_ups():
-    popup = driver.find_element(by=By.ID,
-                                value="onetrust-accept-btn-handler")
+    popup = driver.find_element(
+        by=By.ID,
+        value="onetrust-accept-btn-handler"
+    )
     wait = WebDriverWait(driver, timeout=5)
     wait.until(lambda d: popup.is_displayed())
     popup.click()
-    driver.find_element(by=By.CSS_SELECTOR,
-                        value="button.fc-cta-consent").click()
+    driver.find_element(
+        by=By.CSS_SELECTOR,
+        value="button.fc-cta-consent"
+    ).click()
 
 
 def get(url):
