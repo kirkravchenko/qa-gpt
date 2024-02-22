@@ -1,11 +1,18 @@
 from openai import OpenAI
+from jproperties import Properties
 
-openAI_token = "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"
 model = "gpt-3.5-turbo"
 
 
+def get_openai_token():
+    configs = Properties()
+    with open('openai_token.properties', 'rb') as config_file:
+        configs.load(config_file)
+        return configs.get("openAI_token")[0]
+
+
 def request_gpt(prompt):
-    client = OpenAI(api_key=openAI_token)
+    client = OpenAI(api_key=get_openai_token())
     chat_completion = client.chat.completions.create(
         messages=[
             {
