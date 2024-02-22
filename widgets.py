@@ -27,7 +27,7 @@ class Byline:
     base_description = f"""Byline is a widget that is able to contain the 
     following components: {components_names}. Author name can be a link to the 
     author's page; reviewer name can be a link to reviewer's page. 
-    'medically reviewed' is a button that if you click on it, shows small 
+    'medically reviewed button' is a button that if you click on it, shows small 
     tooltip. That tooltip contains its own components listed above. 
     Name components just as I listed before."""
     widget_specific_description = ""

@@ -5,8 +5,8 @@ from selenium.webdriver.support.wait import WebDriverWait
 import gpt
 import widgets
 import semantic_analyser
+from jproperties import Properties
 
-url = "https://www.everydayhealth.com/testpage/automationstatic/bylinearticle/"
 options = webdriver.ChromeOptions()
 options.add_argument("--start-maximized")
 options.add_argument("--disable-notifications")
@@ -14,11 +14,11 @@ driver = webdriver.Chrome(options=options)
 
 
 def test_byline():
-    get(url)
+    get(get_test_url())
     byline = widgets.Byline(
         """author icon is displayed, default reviewer icon is displayed;
         author name is 'testauthor_active1', reviewer name is 
-        'Test automation affiliation - non clickable', last updated date has 
+        'Mr Test Automation, MPH', last updated date has 
         text 'November 30, 2018'"""
     )
     scenario = get_scenario_from("byline.feature")
@@ -79,3 +79,10 @@ def close_pop_ups():
 def get(url):
     driver.get(url)
     close_pop_ups()
+
+
+def get_test_url():
+    configs = Properties()
+    with open('other.properties', 'rb') as config_file:
+        configs.load(config_file)
+        return configs.get("url")[0]
