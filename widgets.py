@@ -5,7 +5,8 @@ class Byline:
     name = "byline"
     components = [
         ("tooltip", By.CSS_SELECTOR, "div.by-line-tooltip"),
-        ("medically reviewed", By.CSS_SELECTOR, ".by-line__verified-wrapper--medically-reviewed"),
+        ("medically reviewed", By.CSS_SELECTOR,
+         ".by-line__verified-wrapper--medically-reviewed"),
         ("author icon", By.CSS_SELECTOR, ""),
         ("author name", By.CSS_SELECTOR, ""),
         ("reviewer icon", By.CSS_SELECTOR, ""),
