@@ -21,12 +21,6 @@ def match_element_get_by(element_literal, components):
             return by, selector
 
 
-def match_verification(web_element, verification):
-    match verification:
-        case "displayed":
-            assert web_element.is_displayed()
-
-
 def extract_action(step):
     for action in actions:
         if action in str(step).lower():
