@@ -1,5 +1,5 @@
 .idea/*.xml
 *.iml
-openai_token.properties
+openai.properties
 other.properties
 generated_scripts.txt

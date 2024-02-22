@@ -1,18 +1,16 @@
 from openai import OpenAI
 from jproperties import Properties
 
-model = "gpt-3.5-turbo"
 
-
-def get_openai_token():
+def get_openai_property(property):
     configs = Properties()
-    with open('openai_token.properties', 'rb') as config_file:
+    with open('openai.properties', 'rb') as config_file:
         configs.load(config_file)
-        return configs.get("openAI_token")[0]
+        return configs.get(property)[0]
 
 
 def request_gpt(prompt):
-    client = OpenAI(api_key=get_openai_token())
+    client = OpenAI(api_key=get_openai_property("openAI_token"))
     chat_completion = client.chat.completions.create(
         messages=[
             {
@@ -20,7 +18,7 @@ def request_gpt(prompt):
                 "content": prompt,
             }
         ],
-        model=model,
+        model=get_openai_property("model"),
     )
     response = chat_completion.choices[0].message.content
     print(f'response: {response}')
