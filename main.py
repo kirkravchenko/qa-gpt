@@ -15,7 +15,12 @@ driver = webdriver.Chrome(options=options)
 
 def test_byline():
     get(url)
-    byline = widgets.Byline()
+    byline = widgets.Byline(
+        """author icon is displayed, default reviewer icon is displayed;
+        author name is 'testauthor_active1', reviewer name is 
+        'Test automation affiliation - non clickable', last updated date has 
+        text 'November 30, 2018'"""
+    )
     scenario = get_scenario_from("byline.feature")
     # scenario = gpt.generate_scenario_for(byline)
     perform(scenario, byline)

@@ -28,16 +28,17 @@ def request_gpt(prompt):
 
 
 def prompt(widget):
-    return f"""I wrote JAVA method that takes as input description of actions 
-    and performs the actions using Selenium WebDriver Current web page contains 
-    {widget.name} widget. Widget description: {widget.description} I want you 
-    to generate one test scenario for this widget that I can use as input for 
-    my JAVA method. Keep test steps as simple, short as possible. Use terms 
-    from widget description. As user actions use set of these verbs: click, 
-    open, close, verify, check. As verification verbs use these set: displayed, 
-    not displayed, present, not present, other verbs that are concrete, not 
-    ambiguous or abstract.
-    No need to mention opening the webpage as a first step."""
+    return f"""I wrote Python method that takes as input description of actions 
+    and performs the actions using Selenium WebDriver. Current web page contains 
+    {widget.name} widget. Widget description: {widget.base_description} 
+    Properties of this particular widget: {widget.widget_specific_description} 
+    I want you to generate one test scenario for this specific widget that I 
+    can use as input for my Python method. Keep test steps as simple, short as 
+    possible. Use terms from widget description. As user actions use set of 
+    these verbs: click, open, close, verify, check. As verification verbs use 
+    these set: displayed, not displayed, present, not present, other verbs that 
+    are concrete, not ambiguous or abstract.
+    No need to mention opening the webpage as a first step. """
 
 
 def generate_scenario_for(widget):
