@@ -2,6 +2,9 @@ import re
 
 actions = ["click", "double click", "verify", "check", "open", "close"]
 
+# regex
+text_in_brackets_regex = "'(.+)'|\"(.+)\""
+
 # a list of tuples. each tuple contains:
 # [0] - verification with possible regex
 # [1] - verification without regex
