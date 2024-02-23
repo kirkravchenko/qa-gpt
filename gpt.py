@@ -32,14 +32,17 @@ def prompt(widget):
     Properties of this particular widget: {widget.widget_specific_description} 
     I want you to generate one test scenario for this specific widget that I 
     can use as input for my Python method. Keep test steps as simple, short as 
-    possible. Per one step verify only one component. 
-    Use terms from widget description. As user actions use set of 
-    these verbs: click, open, close, verify, check. As verification verbs use 
-    these set: displayed, not displayed, present, not present, other verbs that 
-    are concrete, not ambiguous or abstract.
-    No need to mention opening the webpage as a first step. """
+    possible. Per one step verify only one component. Use terms from widget 
+    description. As user actions use these verbs: click, verify. As 
+    verification verbs use these: displayed, not displayed, present, not 
+    present, page is opened, <component name> text is, <component name> text 
+    contains. Use verbs that are concrete, not ambiguous or abstract. 
+    No need to mention opening the webpage as a first step."""
 
 
 def generate_scenario_for(widget):
-    print(f'prompt: {prompt(widget)}')
     return request_gpt(prompt(widget))
+
+
+def print_prompt(widget):
+    print(f'prompt: {prompt(widget)}')

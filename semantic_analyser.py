@@ -1,12 +1,35 @@
-actions = ["click", "verify", "check", "open", "close"]
-verifications = ["displayed", "not displayed"]
+import re
+
+actions = ["click", "double click", "verify", "check", "open", "close"]
+
+# a list of tuples. each tuple contains:
+# [0] - verification with possible regex
+# [1] - verification without regex
+# if regex version doesn't actually contain regex -
+# it will be same as verification in [1]
+
+class VerificationPattern:
+    def __init__(self, regex, text):
+        self.text = text
+        self.regex = regex
 
 
-def action_inputs(step, components):
+verification_patterns = [
+    VerificationPattern("is present", "is present"),
+    VerificationPattern("is displayed", "is displayed"),
+    VerificationPattern("not displayed", "not displayed"),
+    VerificationPattern("text is '(.+)'|text is \"(.+)\"", "text is"),
+    VerificationPattern("text contains '(.+)'|text contains \"(.+)\"", "text contains"),
+    VerificationPattern("is a link", "is a link"),
+]
+
+
+def get_step_inputs(step, components):
     by = get_by(step, components)
     action_literal = extract_action(step)
-    verification_literal = extract_verification(step)
-    return by, action_literal, verification_literal
+    verifications_objs = extract_verifications(step)
+    step_inputs = StepInputs(by, action_literal, verifications_objs)
+    return step_inputs
 
 
 def get_by(step, components):
@@ -28,13 +51,39 @@ def extract_action(step):
 
 
 def extract_element(step, components):
-    for element in components:
-        element_literal = element[0]
-        if element_literal in str(step).lower():
+    for component in components:
+        element_literal = component[0]
+        if "'" + element_literal + "'" in str(step).lower():
             return element_literal
 
 
-def extract_verification(step):
-    for verification in verifications:
-        if verification in str(step).lower():
-            return verification
+def extract_verifications(step):
+    verifications_list = []
+    for verification_pattern in verification_patterns:
+        verification_action = verification_pattern.text
+        verification_obj = Verification(verification_action, "")
+        match = re.search(verification_pattern.regex, str(step))
+        if match:
+            expected_text_match = re.search(
+                "'(.+)'|\"(.+)\"", match.group(0)
+            )
+            if expected_text_match:
+                expected_text = expected_text_match.group(0)
+                verification_obj.expected_value = (
+                    expected_text.replace("'", "")
+                )
+            verifications_list.append(verification_obj)
+    return verifications_list
+
+
+class StepInputs:
+    def __init__(self, by, action_literal, verifications_objs):
+        self.by = by
+        self.action_literal = action_literal
+        self.verifications_objs = verifications_objs
+
+
+class Verification:
+    def __init__(self, verification_action, expected_value):
+        self.verification_action = verification_action
+        self.expected_value = expected_value

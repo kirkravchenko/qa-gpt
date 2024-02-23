@@ -1,5 +1,7 @@
 from selenium import webdriver
 import time
+
+from selenium.webdriver import ActionChains
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
 import gpt
@@ -34,27 +36,42 @@ def perform(scenario, widget):
 
 
 def perform_next(step, widget):
-    inputs = semantic_analyser.action_inputs(step, widget.components)
-    perform_action(inputs)
+    step_inputs = semantic_analyser.get_step_inputs(step, widget.components)
+    perform_action(step_inputs)
 
 
-def perform_action(inputs):
-    by = inputs[0][0]
-    selector = inputs[0][1]
-    action = inputs[1]
-    verification = inputs[2]
+def perform_action(step_inputs):
+    by = step_inputs.by[0]
+    selector = step_inputs.by[1]
+    action = step_inputs.action_literal
+    verifications = step_inputs.verifications_objs
     web_element = driver.find_element(by=by, value=selector)
     match action:
         case "click":
             web_element.click()
+        case "double click":
+            ActionChains(driver).double_click(web_element).perform()
         case "verify":
-            perform_assert(verification, web_element)
+            for verification in verifications:
+                perform_assert(verification, web_element)
 
 
 def perform_assert(verification, web_element):
-    match verification:
-        case "displayed":
+    match verification.verification_action:
+        case "is displayed":
             assert web_element.is_displayed()
+        case "is present":
+            assert web_element.is_displayed()
+        case "is not displayed":
+            assert not web_element.is_displayed()
+        case "is not present":
+            assert not web_element.is_displayed()
+        case "is a link":
+            assert web_element.get_attribute("href") is not None
+        case "text is":
+            actual = web_element.text
+            expected = verification.expected_value
+            assert actual == expected
 
 
 def get_scenario_from(path):
