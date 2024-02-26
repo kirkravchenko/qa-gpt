@@ -1,9 +1,11 @@
 from selenium import webdriver
 import time
 
+from selenium.common import NoSuchElementException
 from selenium.webdriver import ActionChains
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
+from selenium.webdriver.support import expected_conditions
 import gpt
 import widgets
 import semantic_analyser
@@ -23,7 +25,7 @@ def test_byline():
         'Mr Test Automation, MPH', last updated date has 
         text 'November 30, 2018'"""
     )
-    scenario = get_scenario_from("byline.feature")
+    scenario = get_scenario_from("byline/1.feature")
     # scenario = gpt.generate_scenario_for(byline)
     perform(scenario, byline)
     time.sleep(1)
@@ -45,7 +47,10 @@ def perform_action(step_inputs):
     selector = step_inputs.by[1]
     action = step_inputs.action_literal
     verifications = step_inputs.verifications_objs
-    web_element = driver.find_element(by=by, value=selector)
+    try:
+        web_element = driver.find_element(by=by, value=selector)
+    except NoSuchElementException:
+        web_element = None
     match action:
         case "click":
             web_element.click()
@@ -62,16 +67,24 @@ def perform_assert(verification, web_element):
             assert web_element.is_displayed()
         case "is present":
             assert web_element.is_displayed()
-        case "is not displayed":
-            assert not web_element.is_displayed()
-        case "is not present":
-            assert not web_element.is_displayed()
+        case "not displayed":
+            if web_element is None:
+                return
+            assert web_element.is_displayed() is False
+        case "not present":
+            if web_element is None:
+                return
+            assert web_element.is_displayed() is False
         case "is a link":
             assert web_element.get_attribute("href") is not None
         case "text is":
             actual = web_element.text
             expected = verification.expected_value
             assert actual == expected
+        case "text contains":
+            actual = web_element.text
+            expected = verification.expected_value
+            assert expected in actual
 
 
 def get_scenario_from(path):
@@ -80,12 +93,15 @@ def get_scenario_from(path):
 
 
 def close_pop_ups():
+    wait = WebDriverWait(driver, timeout=5)
+    wait.until(expected_conditions.element_to_be_clickable(
+        (By.ID, "onetrust-accept-btn-handler")
+    ))
     popup = driver.find_element(
         by=By.ID,
         value="onetrust-accept-btn-handler"
     )
-    wait = WebDriverWait(driver, timeout=5)
-    wait.until(lambda d: popup.is_displayed())
+    # wait.until(lambda d: popup.is_displayed())
     popup.click()
     driver.find_element(
         by=By.CSS_SELECTOR,

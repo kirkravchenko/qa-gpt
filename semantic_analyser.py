@@ -21,6 +21,7 @@ verification_patterns = [
     VerificationPattern("is present", "is present"),
     VerificationPattern("is displayed", "is displayed"),
     VerificationPattern("not displayed", "not displayed"),
+    VerificationPattern("not present", "not present"),
     VerificationPattern("text is '(.+)'|text is \"(.+)\"", "text is"),
     VerificationPattern("text contains '(.+)'|text contains \"(.+)\"", "text contains"),
     VerificationPattern("is a link", "is a link"),
@@ -65,10 +66,10 @@ def extract_verifications(step):
     for verification_pattern in verification_patterns:
         verification_action = verification_pattern.text
         verification_obj = Verification(verification_action, "")
-        match = re.search(verification_pattern.regex, str(step))
-        if match:
+        verification_match = re.search(verification_pattern.regex, str(step))
+        if verification_match:
             expected_text_match = re.search(
-                "'(.+)'|\"(.+)\"", match.group(0)
+                text_in_brackets_regex, verification_match.group(0)
             )
             if expected_text_match:
                 expected_text = expected_text_match.group(0)

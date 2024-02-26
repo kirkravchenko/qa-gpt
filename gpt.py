@@ -33,11 +33,13 @@ def prompt(widget):
     I want you to generate one test scenario for this specific widget that I 
     can use as input for my Python method. Keep test steps as simple, short as 
     possible. Per one step verify only one component. Use terms from widget 
-    description. As user actions use these verbs: click, verify. As 
+    description. Always wrap widget component names inside single quotes. 
+    As user actions use these verbs: click, verify. As 
     verification verbs use these: displayed, not displayed, present, not 
     present, page is opened, <component name> text is, <component name> text 
     contains. Use verbs that are concrete, not ambiguous or abstract. 
-    No need to mention opening the webpage as a first step."""
+    No need to mention opening the webpage as a first step. 
+    'page is opened' is not a component"""
 
 
 def generate_scenario_for(widget):
