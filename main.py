@@ -11,10 +11,18 @@ import widgets
 import semantic_analyser
 from jproperties import Properties
 
+
+class ClickedElement:
+    def __init__(self, href="", text=""):
+        self.href = href
+        self.text = text
+
+
 options = webdriver.ChromeOptions()
 options.add_argument("--start-maximized")
 options.add_argument("--disable-notifications")
 driver = webdriver.Chrome(options=options)
+clicked_element = ClickedElement()
 
 
 def test_byline():
@@ -23,9 +31,9 @@ def test_byline():
         """author icon is displayed, default reviewer icon is displayed;
         author name is 'testauthor_active1', reviewer name is 
         'Mr Test Automation, MPH', last updated date has 
-        text 'November 30, 2018'"""
+        text 'on November 30, 2018'"""
     )
-    scenario = get_scenario_from("byline/1.feature")
+    scenario = get_scenario_from("byline/5.feature")
     # scenario = gpt.generate_scenario_for(byline)
     perform(scenario, byline)
     time.sleep(1)
@@ -53,6 +61,9 @@ def perform_action(step_inputs):
         web_element = None
     match action:
         case "click":
+            global clicked_element
+            clicked_element.href = web_element.get_attribute("href")
+            clicked_element.text = web_element.text
             web_element.click()
         case "double click":
             ActionChains(driver).double_click(web_element).perform()

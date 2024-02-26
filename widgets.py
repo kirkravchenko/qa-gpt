@@ -30,4 +30,3 @@ class Byline:
     'medically reviewed button' is a button that if you click on it, shows small 
     tooltip. The button has label 'MEDICALLY REVIEWED'. That tooltip contains 
     its own components listed above. Name components just as I listed before."""
-    widget_specific_description = ""

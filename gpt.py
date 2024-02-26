@@ -21,7 +21,8 @@ def request_gpt(prompt):
         model=get_openai_property("model"),
     )
     response = chat_completion.choices[0].message.content
-    print(f'response: {response}')
+    response = list(filter(None, response.splitlines()[1:]))
+    print(f'\nresponse: {response}')
     return response
 
 
