@@ -1,3 +1,4 @@
+import pytest
 from selenium import webdriver
 import time
 
@@ -60,42 +61,50 @@ def perform_action(step_inputs):
     except NoSuchElementException:
         web_element = None
     match action:
-        case "click":
+        case semantic_analyser.Action.CLICK.value:
             global clicked_element
             clicked_element.href = web_element.get_attribute("href")
             clicked_element.text = web_element.text
             web_element.click()
-        case "double click":
+        case semantic_analyser.Action.DOUBLE_CLICK.value:
             ActionChains(driver).double_click(web_element).perform()
-        case "verify":
+        case semantic_analyser.Action.VERIFY.value:
             for verification in verifications:
-                perform_assert(verification, web_element)
+                perform_assert(verification, web_element, step_inputs.step)
+        case _:
+            pytest.fail(f"no action matched in step '{step_inputs.step}'")
 
 
-def perform_assert(verification, web_element):
+def perform_assert(verification, web_element, step):
     match verification.verification_action:
-        case "is displayed":
+        case semantic_analyser.VerificationItem.IS_DISPLAYED.value:
             assert web_element.is_displayed()
-        case "is present":
+        case semantic_analyser.VerificationItem.IS_PRESENT.value:
             assert web_element.is_displayed()
-        case "not displayed":
+        case semantic_analyser.VerificationItem.NOT_DISPLAYED.value:
             if web_element is None:
                 return
             assert web_element.is_displayed() is False
-        case "not present":
+        case semantic_analyser.VerificationItem.NOT_PRESENT.value:
             if web_element is None:
                 return
             assert web_element.is_displayed() is False
-        case "is a link":
+        case semantic_analyser.VerificationItem.IS_LINK.value:
             assert web_element.get_attribute("href") is not None
-        case "text is":
+        case semantic_analyser.VerificationItem.TEXT_IS.value:
             actual = web_element.text
             expected = verification.expected_value
             assert actual == expected
-        case "text contains":
+        case semantic_analyser.VerificationItem.TEXT_CONTAINS.value:
             actual = web_element.text
             expected = verification.expected_value
             assert expected in actual
+        case semantic_analyser.VerificationItem.PAGE_IS_OPENED.value:
+            expected_url = get_relative_path(clicked_element.href)
+            actual_url = get_relative_path(driver.current_url)
+            assert actual_url == expected_url
+        case _:
+            pytest.fail(f"no verification matched in step '{step}'")
 
 
 def get_scenario_from(path):
@@ -112,7 +121,6 @@ def close_pop_ups():
         by=By.ID,
         value="onetrust-accept-btn-handler"
     )
-    # wait.until(lambda d: popup.is_displayed())
     popup.click()
     driver.find_element(
         by=By.CSS_SELECTOR,
@@ -129,4 +137,25 @@ def get_test_url():
     configs = Properties()
     with open('other.properties', 'rb') as config_file:
         configs.load(config_file)
-        return configs.get("url")[0]
+        return get_base_url() + configs.get("test_url")[0]
+
+
+def get_base_url():
+    configs = Properties()
+    with open('other.properties', 'rb') as config_file:
+        configs.load(config_file)
+        return configs.get("base_url")[0]
+
+
+def get_eh_url_regex():
+    configs = Properties()
+    with open('other.properties', 'rb') as config_file:
+        configs.load(config_file)
+        return configs.get("eh_url_regex")[0]
+
+
+def get_relative_path(absolute_path=get_base_url()):
+    try:
+        return absolute_path.split(get_eh_url_regex())[1]
+    except IndexError:
+        return "/"
