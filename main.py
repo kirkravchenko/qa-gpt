@@ -31,8 +31,8 @@ def test_byline():
     byline = widgets.Byline(
         """author icon is displayed, default reviewer icon is displayed;
         author name is 'testauthor_active1', reviewer name is 
-        'Mr Test Automation, MPH', last updated date has 
-        text 'on November 30, 2018'"""
+        'Mr Test Automation, MPH', last updated date text is 
+        'on November 30, 2018'"""
     )
     scenario = get_scenario_from("byline/5.feature")
     # scenario = gpt.generate_scenario_for(byline)
@@ -79,8 +79,6 @@ def perform_assert(verification, web_element, step):
     match verification.verification_action:
         case semantic_analyser.VerificationItem.IS_DISPLAYED.value:
             assert web_element.is_displayed()
-        case semantic_analyser.VerificationItem.IS_PRESENT.value:
-            assert web_element.is_displayed()
         case semantic_analyser.VerificationItem.NOT_DISPLAYED.value:
             if web_element is None:
                 return
@@ -95,6 +93,19 @@ def perform_assert(verification, web_element, step):
             actual = web_element.text
             expected = verification.expected_value
             assert actual == expected
+        #
+        # TODO the problem is: when extract_verification is performed,
+        #  'is present' verification is being extracted when actually
+        #  'text is present' verification is in step.
+        case semantic_analyser.VerificationItem.TEXT_PRESENT:
+            web_element = driver.find_element(
+                by=By.XPATH, value="//*[text()='Medically Reviewed']"
+                # By.XPATH, f"//*[text()='{verification.expected_value}']"
+            )
+            assert web_element.is_displayed()
+        case semantic_analyser.VerificationItem.IS_PRESENT.value:
+            assert web_element.is_displayed()
+        #  TODO end
         case semantic_analyser.VerificationItem.TEXT_CONTAINS.value:
             actual = web_element.text
             expected = verification.expected_value

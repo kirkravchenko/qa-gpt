@@ -2,27 +2,27 @@ from openai import OpenAI
 from jproperties import Properties
 
 
-def get_openai_property(property):
+def get_openai_property(prop):
     configs = Properties()
     with open('openai.properties', 'rb') as config_file:
         configs.load(config_file)
-        return configs.get(property)[0]
+        return configs.get(prop)[0]
 
 
-def request_gpt(prompt):
+def request_gpt(prompt_text):
     client = OpenAI(api_key=get_openai_property("openAI_token"))
     chat_completion = client.chat.completions.create(
         messages=[
             {
                 "role": "user",
-                "content": prompt,
+                "content": prompt_text,
             }
         ],
         model=get_openai_property("model"),
     )
     response = chat_completion.choices[0].message.content
     response = list(filter(None, response.splitlines()[1:]))
-    print(f'\nresponse: {response}')
+    print_response(response)
     return response
 
 
@@ -49,3 +49,9 @@ def generate_scenario_for(widget):
 
 def print_prompt(widget):
     print(f'prompt: {prompt(widget)}')
+
+
+def print_response(response):
+    print("\n")
+    for line in response:
+        print(line)

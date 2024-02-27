@@ -18,6 +18,7 @@ class VerificationItem(Enum):
     TEXT_IS = "text is"
     TEXT_CONTAINS = "text contains"
     PAGE_IS_OPENED = "page is opened"
+    TEXT_PRESENT = "text is present"
 
 
 actions = [
@@ -73,6 +74,10 @@ verification_patterns = [
     VerificationPattern(
         VerificationItem.PAGE_IS_OPENED.value,
         VerificationItem.PAGE_IS_OPENED.value
+    ),
+    VerificationPattern(
+        "('(.+)'|\"(.+)\") text is present",
+        VerificationItem.TEXT_PRESENT.value,
     )
 ]
 
