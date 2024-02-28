@@ -93,19 +93,11 @@ def perform_assert(verification, web_element, step):
             actual = web_element.text
             expected = verification.expected_value
             assert actual == expected
-        #
-        # TODO the problem is: when extract_verification is performed,
-        #  'is present' verification is being extracted when actually
-        #  'text is present' verification is in step.
-        case semantic_analyser.VerificationItem.TEXT_PRESENT:
-            web_element = driver.find_element(
-                by=By.XPATH, value="//*[text()='Medically Reviewed']"
-                # By.XPATH, f"//*[text()='{verification.expected_value}']"
-            )
-            assert web_element.is_displayed()
+        case semantic_analyser.VerificationItem.TEXT_PRESENT.value:
+            assert (get_web_element_by_text(verification.expected_value)
+                    .is_displayed())
         case semantic_analyser.VerificationItem.IS_PRESENT.value:
             assert web_element.is_displayed()
-        #  TODO end
         case semantic_analyser.VerificationItem.TEXT_CONTAINS.value:
             actual = web_element.text
             expected = verification.expected_value
@@ -117,6 +109,19 @@ def perform_assert(verification, web_element, step):
         case _:
             pytest.fail(f"no verification matched in step '{step}'")
 
+
+def get_web_element_by_text(expected_value):
+    try:
+        web_element = driver.find_element(
+            By.XPATH, f"//*[text()='{expected_value}']"
+        )
+        return web_element
+    except NoSuchElementException:
+        expected_value = (str(expected_value).lower().title())
+        web_element = driver.find_element(
+            By.XPATH, f"//*[text()='{expected_value}']"
+        )
+        return web_element
 
 def get_scenario_from(path):
     with open(path) as steps:

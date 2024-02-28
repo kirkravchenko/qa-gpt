@@ -45,6 +45,10 @@ class VerificationPattern:
 
 verification_patterns = [
     VerificationPattern(
+        "('(.+)'|\"(.+)\") text is present",
+        VerificationItem.TEXT_PRESENT.value,
+    ),
+    VerificationPattern(
         VerificationItem.IS_PRESENT.value,
         VerificationItem.IS_PRESENT.value
     ),
@@ -74,10 +78,6 @@ verification_patterns = [
     VerificationPattern(
         VerificationItem.PAGE_IS_OPENED.value,
         VerificationItem.PAGE_IS_OPENED.value
-    ),
-    VerificationPattern(
-        "('(.+)'|\"(.+)\") text is present",
-        VerificationItem.TEXT_PRESENT.value,
     )
 ]
 
@@ -85,8 +85,9 @@ verification_patterns = [
 def get_step_inputs(step, components):
     by = get_by(step, components)
     action_literal = extract_action(step)
-    verifications_objs = extract_verifications(step)
-    step_inputs = StepInputs(by, action_literal, verifications_objs, step)
+    verifications_list = extract_verifications(step)
+    verifications_list = process_verifications(verifications_list)
+    step_inputs = StepInputs(by, action_literal, verifications_list, step)
     return step_inputs
 
 
@@ -133,6 +134,24 @@ def extract_verifications(step):
                     expected_text.replace("'", "")
                 )
             verifications_list.append(verification_obj)
+    return verifications_list
+
+
+def process_verifications(verifications_list):
+    verifications_list = process_present_verifications(verifications_list)
+    return verifications_list
+
+
+def process_present_verifications(verifications_list):
+    def verification_actions(verification=Verification("","")):
+        return verification.verification_action
+
+    verification_actions_list = list(map(verification_actions, verifications_list))
+    if VerificationItem.TEXT_PRESENT.value in verification_actions_list:
+        if VerificationItem.IS_PRESENT.value in verification_actions_list:
+            for verification in verifications_list:
+                if verification.verification_action == VerificationItem.IS_PRESENT.value:
+                    verifications_list.remove(verification)
     return verifications_list
 
 
