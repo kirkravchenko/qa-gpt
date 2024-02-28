@@ -14,9 +14,10 @@ from jproperties import Properties
 
 
 class ClickedElement:
-    def __init__(self, href="", text=""):
+    def __init__(self, href="", text="", class_attr=""):
         self.href = href
         self.text = text
+        self.class_attr = class_attr
 
 
 options = webdriver.ChromeOptions()
@@ -32,9 +33,10 @@ def test_byline():
         """author icon is displayed, default reviewer icon is displayed;
         author name is 'testauthor_active1', reviewer name is 
         'Mr Test Automation, MPH', last updated date text is 
-        'on November 30, 2018'"""
+        'on November 30, 2018', Medically reviewed button is present 
+        with tooltip, tooltip contains all its possible components"""
     )
-    scenario = get_scenario_from("byline/5.feature")
+    scenario = get_scenario_from("byline/saved.feature")
     # scenario = gpt.generate_scenario_for(byline)
     perform(scenario, byline)
     time.sleep(1)
@@ -42,7 +44,9 @@ def test_byline():
 
 
 def perform(scenario, widget):
+    print("\nPerforming steps")
     for step in scenario:
+        print(step)
         perform_next(step, widget)
 
 
@@ -62,9 +66,7 @@ def perform_action(step_inputs):
         web_element = None
     match action:
         case semantic_analyser.Action.CLICK.value:
-            global clicked_element
-            clicked_element.href = web_element.get_attribute("href")
-            clicked_element.text = web_element.text
+            populate_clicked_element(web_element)
             web_element.click()
         case semantic_analyser.Action.DOUBLE_CLICK.value:
             ActionChains(driver).double_click(web_element).perform()
@@ -73,6 +75,27 @@ def perform_action(step_inputs):
                 perform_assert(verification, web_element, step_inputs.step)
         case _:
             pytest.fail(f"no action matched in step '{step_inputs.step}'")
+
+
+def populate_clicked_element(web_element):
+    global clicked_element
+    try:
+        clicked_element.href = web_element.get_attribute("href")
+    except AttributeError:
+        pass
+    try:
+        clicked_element.text = web_element.text
+    except AttributeError:
+        pass
+    try:
+        clicked_element.class_attr = web_element.get_attribute("class")
+    except AttributeError:
+        pass
+
+
+def assert_link_transition(clicked_element):
+    assert driver.current_url == clicked_element.href
+    driver.back()
 
 
 def perform_assert(verification, web_element, step):
@@ -103,9 +126,7 @@ def perform_assert(verification, web_element, step):
             expected = verification.expected_value
             assert expected in actual
         case semantic_analyser.VerificationItem.PAGE_IS_OPENED.value:
-            expected_url = get_relative_path(clicked_element.href)
-            actual_url = get_relative_path(driver.current_url)
-            assert actual_url == expected_url
+            assert_link_transition(clicked_element)
         case _:
             pytest.fail(f"no verification matched in step '{step}'")
 
@@ -122,6 +143,7 @@ def get_web_element_by_text(expected_value):
             By.XPATH, f"//*[text()='{expected_value}']"
         )
         return web_element
+
 
 def get_scenario_from(path):
     with open(path) as steps:

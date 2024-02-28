@@ -1,0 +1,1 @@
+7. Click on 'medically reviewed button' tooltip and verify 'tooltip icon' is displayed.

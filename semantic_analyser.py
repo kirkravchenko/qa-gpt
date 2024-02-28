@@ -1,6 +1,7 @@
 import re
-from selenium.webdriver.common.by import By
 from enum import Enum
+
+import widgets
 
 
 class Action(Enum):
@@ -30,12 +31,11 @@ actions = [
 # regex
 text_in_brackets_regex = "'(.+)'|\"(.+)\""
 
+# conjunctions
+and_conjunction = " and "
+# TODO for the following step 'Click on 'medically reviewed button' tooltip
+#  and verify 'tooltip icon' is displayed.' think of conjunction splitting
 
-# a list of tuples. each tuple contains:
-# [0] - verification with possible regex
-# [1] - verification without regex
-# if regex version doesn't actually contain regex -
-# it will be same as verification in [1]
 
 class VerificationPattern:
     def __init__(self, regex, text):
@@ -98,10 +98,8 @@ def get_by(step, components):
 
 def match_element_get_by(element_literal, components):
     for component in components:
-        expected_literal, by, selector = component
-        if element_literal is expected_literal:
-            return by, selector
-    return By.ID, ""
+        if element_literal is component.name:
+            return component.by, component.selector
 
 
 def extract_action(step):
@@ -111,11 +109,15 @@ def extract_action(step):
     return ""
 
 
-def extract_element(step, components):
+def extract_element(step, components=None):
+    if components is None:
+        components = [widgets.WidgetComponent("", "")]
     for component in components:
-        element_literal = component[0]
-        if "'" + element_literal + "'" in str(step).lower():
-            return element_literal
+        conjunctions = component.get_actions_components_conjunctions()
+        if conjunctions:
+            for conjunction in conjunctions:
+                if conjunction in str(step).lower():
+                    return component.name
 
 
 def extract_verifications(step):
@@ -143,10 +145,11 @@ def process_verifications(verifications_list):
 
 
 def process_present_verifications(verifications_list):
-    def verification_actions(verification=Verification("","")):
+    def verification_actions(verification=Verification("", "")):
         return verification.verification_action
 
-    verification_actions_list = list(map(verification_actions, verifications_list))
+    verification_actions_list = list(
+        map(verification_actions, verifications_list))
     if VerificationItem.TEXT_PRESENT.value in verification_actions_list:
         if VerificationItem.IS_PRESENT.value in verification_actions_list:
             for verification in verifications_list:

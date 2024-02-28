@@ -52,6 +52,6 @@ def print_prompt(widget):
 
 
 def print_response(response):
-    print("\n")
+    print("\nGenerated scenario")
     for line in response:
         print(line)
