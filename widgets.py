@@ -23,31 +23,7 @@ class Byline:
     def __init__(self, widget_specific_description=""):
         self.widget_specific_description = widget_specific_description
 
-    old_components = [
-        ("tooltip", By.CSS_SELECTOR, "div.by-line-tooltip"),
-        ("tooltip icon", By.CSS_SELECTOR, ".by-line-tooltip__top-left svg"),
-        ("tooltip subheading", By.XPATH,
-         "//span[@class='by-line-tooltip__subheading']"),
-        ("tooltip body", By.CSS_SELECTOR, ".by-line-tooltip__body"),
-        ("tooltip link", By.CSS_SELECTOR, ".by-line-tooltip__footer a"),
-        ("tooltip close button", By.CSS_SELECTOR,
-         ".by-line-tooltip__top-right svg"),
-        ("medically reviewed button", By.XPATH,
-         "//button[text()='Medically Reviewed']"),
-        ("medically reviewed icon", By.CSS_SELECTOR,
-         ".by-line__verified-wrapper--medically-reviewed svg"),
-        ("author icon", By.XPATH, "//div[div[text()='By']]//img"),
-        ("reviewer icon", By.XPATH,
-         "//div[div[div[button[contains(text(),'Medically Reviewed')]]]]//img"),
-        ("default author icon", By.XPATH,
-         "//div[div[text()='By']]//*[local-name() = 'svg']"),
-        ("default reviewer icon", By.XPATH,
-         "//div[div[div[button[contains(text(),'Medically Reviewed')]]]]/div[@class='by-line__profile-icons']//*[local-name() = 'svg']"),
-        ("author name", By.XPATH, "//div[text()='By']//a"),
-        ("reviewer name", By.XPATH,
-         "//div[div[button[contains(text(),'Medically Reviewed')]]]//a[@rel='author']"),
-        ("last updated date", By.CSS_SELECTOR, ".by-line__last-updated-date"),
-    ]
+
     name = "byline"
     components = [
         WidgetComponent(
@@ -71,7 +47,8 @@ class Byline:
             By.CSS_SELECTOR, ["click on"]
         ),
         WidgetComponent(
-            "tooltip close button", ".by-line-tooltip__top-right svg",
+            "tooltip close button",
+            ".by-line-tooltip__top-right svg",
             By.CSS_SELECTOR, ["click on"]
         ),
         WidgetComponent(
@@ -90,7 +67,8 @@ class Byline:
         ),
         WidgetComponent(
             "reviewer icon",
-            "//div[div[div[button[contains(text(),'Medically Reviewed')]]]]//img",
+            "//div[div[div[button[contains(text(),'Medically Reviewed')"
+            "]]]]//img",
             By.XPATH
         ),
         WidgetComponent(
@@ -100,7 +78,9 @@ class Byline:
         ),
         WidgetComponent(
             "default reviewer icon",
-            "//div[div[div[button[contains(text(),'Medically Reviewed')]]]]/div[@class='by-line__profile-icons']//*[local-name() = 'svg']",
+            "//div[div[div[button[contains(text(),"
+            "'Medically Reviewed')]]]]/div[@class='by-line__profile-icons']"
+            "//*[local-name() = 'svg']",
             By.XPATH
         ),
         WidgetComponent(
@@ -109,7 +89,8 @@ class Byline:
         ),
         WidgetComponent(
             "reviewer name",
-            "//div[div[button[contains(text(),'Medically Reviewed')]]]//a[@rel='author']",
+            "//div[div[button[contains(text(),'Medically Reviewed')]]]"
+            "//a[@rel='author']",
             By.XPATH, ["click on"]
         ),
         WidgetComponent(

@@ -153,7 +153,8 @@ def process_present_verifications(verifications_list):
     if VerificationItem.TEXT_PRESENT.value in verification_actions_list:
         if VerificationItem.IS_PRESENT.value in verification_actions_list:
             for verification in verifications_list:
-                if verification.verification_action == VerificationItem.IS_PRESENT.value:
+                if (verification.verification_action ==
+                        VerificationItem.IS_PRESENT.value):
                     verifications_list.remove(verification)
     return verifications_list
 
