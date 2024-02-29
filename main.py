@@ -20,11 +20,18 @@ class ClickedElement:
         self.class_attr = class_attr
 
 
+class PageInfo:
+    def __init__(self, url="", title=""):
+        self.url = url
+        self.title = title
+
+
 options = webdriver.ChromeOptions()
 options.add_argument("--start-maximized")
 options.add_argument("--disable-notifications")
 driver = webdriver.Chrome(options=options)
 clicked_element = ClickedElement()
+visited_page_info = PageInfo()
 
 
 def test_byline():
@@ -46,8 +53,20 @@ def test_byline():
 def perform(scenario, widget):
     print("\nPerforming steps")
     for step in scenario:
-        print(step)
-        perform_next(step, widget)
+        sub_steps = split_step_into_sub_steps(step)
+        for sub_step in sub_steps:
+            print(sub_step)
+            perform_next(sub_step, widget)
+
+
+def split_step_into_sub_steps(step):
+    sub_steps = []
+    for conjunction in semantic_analyser.sub_step_conjunctions:
+        if conjunction in step:
+            sub_steps.extend(step.split(conjunction))
+    if not sub_steps:
+        sub_steps.append(step)
+    return sub_steps
 
 
 def perform_next(step, widget):
@@ -95,7 +114,14 @@ def populate_clicked_element(web_element):
 
 def assert_link_transition(clicked_element):
     assert driver.current_url == clicked_element.href
+    populate_visited_page_info()
     driver.back()
+
+
+def populate_visited_page_info():
+    global visited_page_info
+    visited_page_info.url = driver.current_url
+    visited_page_info.title = driver.title
 
 
 def perform_assert(verification, web_element, step):

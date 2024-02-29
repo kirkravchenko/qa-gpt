@@ -32,9 +32,9 @@ actions = [
 text_in_brackets_regex = "'(.+)'|\"(.+)\""
 
 # conjunctions
-and_conjunction = " and "
-# TODO for the following step 'Click on 'medically reviewed button' tooltip
-#  and verify 'tooltip icon' is displayed.' think of conjunction splitting
+sub_step_conjunctions = [
+    " and "
+]
 
 
 class VerificationPattern:
@@ -112,8 +112,10 @@ def extract_action(step):
 def extract_element(step, components=None):
     if components is None:
         components = [widgets.WidgetComponent("", "")]
+    # TODO think of storing 'conjunctions' somewhere else (a def?)
+    conjunctions = ["verify page is opened"]
     for component in components:
-        conjunctions = component.get_actions_components_conjunctions()
+        conjunctions.extend(component.get_actions_components_conjunctions())
         if conjunctions:
             for conjunction in conjunctions:
                 if conjunction in str(step).lower():

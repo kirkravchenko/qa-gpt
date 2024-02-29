@@ -23,79 +23,77 @@ class Byline:
     def __init__(self, widget_specific_description=""):
         self.widget_specific_description = widget_specific_description
 
-
     name = "byline"
     components = [
         WidgetComponent(
             "tooltip", "div.by-line-tooltip", By.CSS_SELECTOR,
-            ["click on"]
+            ["click on", "verify"]
         ),
         WidgetComponent(
             "tooltip icon", ".by-line-tooltip__top-left svg",
-            By.CSS_SELECTOR
+            By.CSS_SELECTOR, ["verify"]
         ),
         WidgetComponent(
             "tooltip subheading",
-            "//span[@class='by-line-tooltip__subheading']", By.XPATH
+            "//span[@class='by-line-tooltip__subheading']", By.XPATH,
+            ["verify"]
         ),
         WidgetComponent(
             "tooltip body", ".by-line-tooltip__body",
-            By.CSS_SELECTOR
+            By.CSS_SELECTOR, ["verify"]
         ),
         WidgetComponent(
             "tooltip link", ".by-line-tooltip__footer a",
-            By.CSS_SELECTOR, ["click on"]
+            By.CSS_SELECTOR, ["click on", "verify"]
         ),
         WidgetComponent(
             "tooltip close button",
             ".by-line-tooltip__top-right svg",
-            By.CSS_SELECTOR, ["click on"]
+            By.CSS_SELECTOR, ["click on", "verify"]
         ),
         WidgetComponent(
             "medically reviewed button",
             "//button[text()='Medically Reviewed']", By.XPATH,
-            ["click on"]
+            ["click on", "verify"]
         ),
         WidgetComponent(
             "medically reviewed icon",
             ".by-line__verified-wrapper--medically-reviewed svg",
-            By.CSS_SELECTOR
+            By.CSS_SELECTOR, ["verify"]
         ),
         WidgetComponent(
             "author icon", "//div[div[text()='By']]//img",
-            By.XPATH
+            By.XPATH, ["verify"]
         ),
         WidgetComponent(
             "reviewer icon",
             "//div[div[div[button[contains(text(),'Medically Reviewed')"
-            "]]]]//img",
-            By.XPATH
+            "]]]]//img", By.XPATH, ["verify"]
         ),
         WidgetComponent(
             "default author icon",
             "//div[div[text()='By']]//*[local-name() = 'svg']",
-            By.XPATH
+            By.XPATH, ["verify"]
         ),
         WidgetComponent(
             "default reviewer icon",
             "//div[div[div[button[contains(text(),"
             "'Medically Reviewed')]]]]/div[@class='by-line__profile-icons']"
-            "//*[local-name() = 'svg']",
-            By.XPATH
+            "//*[local-name() = 'svg']", By.XPATH, ["verify"]
         ),
         WidgetComponent(
             "author name", "//div[text()='By']//a",
-            By.XPATH, ["click on"]
+            By.XPATH, ["click on", "verify"]
         ),
         WidgetComponent(
             "reviewer name",
             "//div[div[button[contains(text(),'Medically Reviewed')]]]"
             "//a[@rel='author']",
-            By.XPATH, ["click on"]
+            By.XPATH, ["click on", "verify"]
         ),
         WidgetComponent(
             "last updated date", ".by-line__last-updated-date",
-            By.CSS_SELECTOR
+            By.CSS_SELECTOR, ["verify"]
         ),
     ]
     components_names = list(map(lambda x: x.name, components))
