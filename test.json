@@ -1,0 +1,72 @@
+[
+    {
+        "action": "verify",
+        "component": "'author icon'",
+        "verification": "is displayed"
+    },
+    {
+        "action": "verify",
+        "component": "'default reviewer icon'",
+        "verification": "is displayed"
+    },
+    {
+        "action": "verify",
+        "component": "'author name'",
+        "verification": "text is",
+        "value": "testauthor_active1"
+    },
+    {
+        "action": "click",
+        "component": "'author name'"
+    },
+    {
+        "action": "verify",
+        "component": "'page title contains'",
+        "value": "testauthor_active1"
+    },
+    {
+        "action": "navigate back"
+    },
+    {
+        "action": "verify",
+        "component": "'reviewer name'",
+        "verification": "text is",
+        "value": "Mr Test Automation, MPH"
+    },
+    {
+        "action": "click",
+        "component": "'reviewer name'"
+    },
+    {
+        "action": "verify",
+        "component": "'page title contains'",
+        "value": "Mr Test Automation, MPH"
+    },
+    {
+        "action": "navigate back"
+    },
+    {
+        "action": "verify",
+        "component": "'last updated date'",
+        "verification": "text is",
+        "value": "on November 30, 2018"
+    },
+    {
+        "action": "verify",
+        "component": "'medically reviewed button'",
+        "verification": "is present"
+    },
+    {
+        "action": "click",
+        "component": "'medically reviewed button'"
+    },
+    {
+        "action": "verify",
+        "component": "'tooltip'",
+        "verification": "is present"
+    },
+    {
+        "action": "click",
+        "component": "'tooltip close button'"
+    }
+]

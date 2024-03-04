@@ -27,7 +27,7 @@ class Byline:
     components = [
         WidgetComponent(
             "tooltip", "div.by-line-tooltip", By.CSS_SELECTOR,
-            ["click on", "verify"]
+            ["click", "click on", "verify"]
         ),
         WidgetComponent(
             "tooltip icon", ".by-line-tooltip__top-left svg",
@@ -44,17 +44,17 @@ class Byline:
         ),
         WidgetComponent(
             "tooltip link", ".by-line-tooltip__footer a",
-            By.CSS_SELECTOR, ["click on", "verify"]
+            By.CSS_SELECTOR, ["click", "click on", "verify"]
         ),
         WidgetComponent(
             "tooltip close button",
             ".by-line-tooltip__top-right svg",
-            By.CSS_SELECTOR, ["click on", "verify"]
+            By.CSS_SELECTOR, ["click", "click on", "verify"]
         ),
         WidgetComponent(
             "medically reviewed button",
             "//button[text()='Medically Reviewed']", By.XPATH,
-            ["click on", "verify"]
+            ["click", "click on", "verify"]
         ),
         WidgetComponent(
             "medically reviewed icon",
@@ -83,13 +83,13 @@ class Byline:
         ),
         WidgetComponent(
             "author name", "//div[text()='By']//a",
-            By.XPATH, ["click on", "verify"]
+            By.XPATH, ["click", "click on", "verify"]
         ),
         WidgetComponent(
             "reviewer name",
             "//div[div[button[contains(text(),'Medically Reviewed')]]]"
             "//a[@rel='author']",
-            By.XPATH, ["click on", "verify"]
+            By.XPATH, ["click", "click on", "verify"]
         ),
         WidgetComponent(
             "last updated date", ".by-line__last-updated-date",
@@ -98,8 +98,9 @@ class Byline:
     ]
     components_names = list(map(lambda x: x.name, components))
     base_description = f"""Byline is a widget that is able to contain the 
-    following components: {components_names}. Author name can be a link to the 
+    following components. The list of possible component strings: 
+    {components_names}.\nAuthor name can be a link to the 
     author's page; reviewer name can be a link to reviewer's page. 
     'medically reviewed button' is a button that if you click on it, shows small 
     tooltip. The button has label 'MEDICALLY REVIEWED'. That tooltip contains 
-    its own components listed above. Name components just as I listed before."""
+    its own components listed above. Name components just as I listed before"""

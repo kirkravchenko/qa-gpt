@@ -1,3 +1,5 @@
+import json
+
 import pytest
 from selenium import webdriver
 import time
@@ -11,6 +13,7 @@ import gpt
 import widgets
 import semantic_analyser
 from jproperties import Properties
+from types import SimpleNamespace
 
 
 class ClickedElement:
@@ -34,6 +37,11 @@ clicked_element = ClickedElement()
 visited_page_info = PageInfo()
 
 
+def parse_json(json_string):
+    data = json.loads(json_string, object_hook=lambda d: SimpleNamespace(**d))
+    return data
+
+
 def test_byline():
     get(get_test_url())
     byline = widgets.Byline(
@@ -43,8 +51,12 @@ def test_byline():
         'on November 30, 2018', Medically reviewed button is present 
         with tooltip, tooltip contains all its possible components"""
     )
-    scenario = get_scenario_from("byline/saved.feature")
-    # scenario = gpt.generate_scenario_for(byline)
+    # scenario = get_scenario_from("byline/saved.feature")
+    scenario = gpt.generate_scenario_for(byline)
+    print(scenario)
+    scenario_json = parse_json(scenario)
+    # for step in scenario_json:
+    #     print(step)
     perform(scenario, byline)
     time.sleep(1)
     driver.quit()
@@ -92,6 +104,8 @@ def perform_action(step_inputs):
         case semantic_analyser.Action.VERIFY.value:
             for verification in verifications:
                 perform_assert(verification, web_element, step_inputs.step)
+        case semantic_analyser.Action.NAVIGATE_BACK.value:
+            driver.back()
         case _:
             pytest.fail(f"no action matched in step '{step_inputs.step}'")
 
@@ -113,9 +127,17 @@ def populate_clicked_element(web_element):
 
 
 def assert_link_transition(clicked_element):
-    assert driver.current_url == clicked_element.href
+    actual = get_url_without_protocol(driver.current_url)
+    expected = get_url_without_protocol(clicked_element.href)
+    assert actual == expected
     populate_visited_page_info()
-    driver.back()
+
+
+def get_url_without_protocol(url):
+    if "www" in url:
+        return url.split("www.")[1]
+    else:
+        return url.split("://")[1]
 
 
 def populate_visited_page_info():
@@ -153,6 +175,10 @@ def perform_assert(verification, web_element, step):
             assert expected in actual
         case semantic_analyser.VerificationItem.PAGE_IS_OPENED.value:
             assert_link_transition(clicked_element)
+        case semantic_analyser.VerificationItem.PAGE_TITLE_IS.value:
+            assert visited_page_info.title == verification.expected_value
+        case semantic_analyser.VerificationItem.PAGE_TITLE_CONTAINS.value:
+            assert visited_page_info.title in verification.expected_value
         case _:
             pytest.fail(f"no verification matched in step '{step}'")
 

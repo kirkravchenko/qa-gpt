@@ -1,14 +1,25 @@
-1. Click on 'medically reviewed button'
-   - Verify 'tooltip' is displayed
-   - Verify 'tooltip icon' is present
-   - Verify 'tooltip subheading' text is 'MEDICALLY REVIEWED'
-   - Verify 'tooltip body' is displayed
-   - Verify 'tooltip link' is present
-   - Verify 'tooltip close button' is displayed
-2. Click on 'author name'
-   - Verify page is opened
-   - Verify page title contains 'testauthor_active1'
-3. Click on 'reviewer name'
-   - Verify page is opened
-   - Verify page title contains 'Mr Test Automation, MPH'
-4. Verify 'last updated date' text is 'on November 30, 2018'
+1. "verify 'author icon' is displayed"
+2. "verify 'default reviewer icon' is displayed"
+3. "verify 'author name' text is 'testauthor_active1'"
+4. "click 'author name'"
+5. "verify page is opened"
+6. "navigate back"
+7. "verify 'reviewer name' text is 'Mr Test Automation, MPH'"
+8. "click 'reviewer name'"
+9. "verify page is opened"
+10. "navigate back"
+11. "verify 'last updated date' text is 'on November 30, 2018'"
+12. "verify 'medically reviewed button' is present"
+13. "click 'medically reviewed button'"
+14. "verify 'tooltip' is displayed"
+15. "verify 'tooltip icon' is displayed"
+16. "verify 'tooltip subheading' is displayed"
+17. "verify 'tooltip body' is displayed"
+18. "verify 'tooltip link' is displayed"
+19. "click 'tooltip link'"
+20. "verify page is opened"
+21. "navigate back"
+13. "click 'medically reviewed button'"
+22. "verify 'tooltip close button' is displayed"
+23. "click 'tooltip close button'"
+24. "verify 'tooltip' is not displayed".

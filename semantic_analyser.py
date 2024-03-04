@@ -1,5 +1,6 @@
 import re
 from enum import Enum
+from selenium.webdriver.common.by import By
 
 import widgets
 
@@ -8,6 +9,7 @@ class Action(Enum):
     CLICK = "click"
     DOUBLE_CLICK = "double click"
     VERIFY = "verify"
+    NAVIGATE_BACK = "navigate back"
 
 
 class VerificationItem(Enum):
@@ -20,13 +22,16 @@ class VerificationItem(Enum):
     TEXT_CONTAINS = "text contains"
     PAGE_IS_OPENED = "page is opened"
     TEXT_PRESENT = "text is present"
+    PAGE_TITLE_IS = "page title is"
+    PAGE_TITLE_CONTAINS = "page title contains"
 
 
-actions = [
-    Action.CLICK.value,
-    Action.DOUBLE_CLICK.value,
-    Action.VERIFY.value
-]
+def get_possible_verifications():
+    verifications = []
+    for verification in VerificationItem.__members__.values():
+        verifications.append(verification.value)
+    return verifications
+
 
 # regex
 text_in_brackets_regex = "'(.+)'|\"(.+)\""
@@ -78,6 +83,14 @@ verification_patterns = [
     VerificationPattern(
         VerificationItem.PAGE_IS_OPENED.value,
         VerificationItem.PAGE_IS_OPENED.value
+    ),
+    VerificationPattern(
+        "page title is '(.+)'|page title is \"(.+)\"",
+        VerificationItem.PAGE_TITLE_IS.value
+    ),
+    VerificationPattern(
+        "page title contains '(.+)'|page title contains \"(.+)\"",
+        VerificationItem.PAGE_TITLE_CONTAINS.value
     )
 ]
 
@@ -93,6 +106,8 @@ def get_step_inputs(step, components):
 
 def get_by(step, components):
     element_literal = extract_element(step, components)
+    if element_literal == "":
+        return By.ID, ""
     return match_element_get_by(element_literal, components)
 
 
@@ -102,8 +117,15 @@ def match_element_get_by(element_literal, components):
             return component.by, component.selector
 
 
+def get_actions():
+    actions = []
+    for action in Action.__members__.values():
+        actions.append(action.value)
+    return actions
+
+
 def extract_action(step):
-    for action in actions:
+    for action in get_actions():
         if action in str(step).lower():
             return action
     return ""
@@ -113,13 +135,14 @@ def extract_element(step, components=None):
     if components is None:
         components = [widgets.WidgetComponent("", "")]
     # TODO think of storing 'conjunctions' somewhere else (a def?)
-    conjunctions = ["verify page is opened"]
+    conjunctions = []
     for component in components:
         conjunctions.extend(component.get_actions_components_conjunctions())
         if conjunctions:
             for conjunction in conjunctions:
                 if conjunction in str(step).lower():
                     return component.name
+    return ""
 
 
 def extract_verifications(step):

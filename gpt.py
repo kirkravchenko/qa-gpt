@@ -1,6 +1,7 @@
 from openai import OpenAI
 from jproperties import Properties
-
+import json
+import semantic_analyser
 
 def get_openai_property(prop):
     configs = Properties()
@@ -14,15 +15,14 @@ def request_gpt(prompt_text):
     chat_completion = client.chat.completions.create(
         messages=[
             {
-                "role": "user",
+                "role": "system",
                 "content": prompt_text,
             }
         ],
         model=get_openai_property("model"),
     )
     response = chat_completion.choices[0].message.content
-    response = list(filter(None, response.splitlines()[1:]))
-    print_response(response)
+    # response = list(filter(None, response.splitlines()[1:]))
     return response
 
 
@@ -32,15 +32,147 @@ def prompt(widget):
     {widget.name} widget. Widget description: {widget.base_description} 
     Properties of this particular widget: {widget.widget_specific_description} 
     I want you to generate one test scenario for this specific widget that I 
-    can use as input for my Python method. Keep test steps as simple, short as 
+    can use as input for my Python method.
+    The list of possible action strings: {semantic_analyser.get_actions()}\n
+    The list of possible verification strings: {semantic_analyser.get_possible_verifications()}\n
+    The generated scenario should be in a JSON format. Each step of the 
+    scenario is a JSON object:\n
+    {{ 
+        "action": "<action string>", 
+        "component": "<component name>", 
+        "verification": "<verification string>",
+        "value": "<text value of component, if any>"
+    }}\n 
+    Each filed in JSON is required!
+    Keep test steps as simple, short as 
     possible. Per one step verify only one component. Use terms from widget 
-    description. Always wrap widget component names inside single quotes. 
-    As user actions use these verbs: click, verify. As 
-    verification verbs use these: displayed, not displayed, present, not 
+    description. As user actions use these verbs: click, verify.\n 
+    The list of verification verbs: displayed, not displayed, present, not 
     present, page is opened, <component name> text is, <component name> text 
     contains. Use verbs that are concrete, not ambiguous or abstract. 
     No need to mention opening the webpage as a first step. 
-    'page is opened' is not a component"""
+    'page is opened' is not a component. If you generate a step where page
+    is opened, make sure to append a step to navigate back. 
+    If you generate a step where user click on link, make sure to append a 
+    step to navigate back.\n
+    Just respond with JSON, don't write any comments"""
+
+
+example_from_user_prompt="""
+Here is an example of generated scenario.
+{
+  "scenario": [
+    {
+      "action": "verify",
+      "component": "author icon",
+      "verification": "is displayed",
+      "value": ""
+    },
+    {
+      "action": "verify",
+      "component": "default reviewer icon",
+      "verification": "is displayed",
+      "value": ""
+    },
+    {
+      "action": "verify",
+      "component": "author name",
+      "verification": "text is",
+      "value": "testauthor_active1"
+    },
+    {
+      "action": "verify",
+      "component": "reviewer name",
+      "verification": "text is",
+      "value": "Mr Test Automation, MPH"
+    },
+    {
+      "action": "verify",
+      "component": "last updated date",
+      "verification": "text is",
+      "value": "on November 30, 2018"
+    },
+    {
+      "action": "verify",
+      "component": "medically reviewed button",
+      "verification": "is present",
+      "value": ""
+    },
+    {
+      "action": "click",
+      "component": "medically reviewed button",
+      "verification": "",
+      "value": ""
+    },
+    {
+      "action": "verify",
+      "component": "tooltip",
+      "verification": "is present",
+      "value": ""
+    },
+    {
+      "action": "verify",
+      "component": "tooltip icon",
+      "verification": "is displayed",
+      "value": ""
+    },
+    {
+      "action": "verify",
+      "component": "tooltip subheading",
+      "verification": "is present",
+      "value": ""
+    },
+    {
+      "action": "verify",
+      "component": "tooltip body",
+      "verification": "is present",
+      "value": ""
+    },
+    {
+      "action": "verify",
+      "component": "tooltip link",
+      "verification": "is present",
+      "value": ""
+    },
+    {
+      "action": "verify",
+      "component": "tooltip close button",
+      "verification": "is present",
+      "value": ""
+    },
+    {
+      "action": "click",
+      "component": "tooltip link",
+      "verification": "",
+      "value": ""
+    },
+    {
+      "action": "verify",
+      "component": "page is opened",
+      "verification": "is true",
+      "value": ""
+    },
+    {
+      "action": "navigate back",
+      "component": "",
+      "verification": "",
+      "value": ""
+    },
+    {
+      "action": "click",
+      "component": "tooltip close button",
+      "verification": "",
+      "value": ""
+    },
+    {
+      "action": "verify",
+      "component": "tooltip",
+      "verification": "not displayed",
+      "value": ""
+    }
+  ]
+}
+"""
 
 
 def generate_scenario_for(widget):
