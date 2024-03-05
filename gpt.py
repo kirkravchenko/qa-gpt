@@ -2,6 +2,7 @@ from openai import OpenAI
 from jproperties import Properties
 import semantic_analyser
 
+
 def get_openai_property(prop):
     configs = Properties()
     with open('openai.properties', 'rb') as config_file:
@@ -33,31 +34,29 @@ def prompt(widget):
     I want you to generate one test scenario for this specific widget that I 
     can use as input for my Python method.
     The list of possible action strings: {semantic_analyser.get_actions()}\n
-    The list of possible verification strings: {semantic_analyser.get_possible_verifications()}\n
+    The list of possible verification strings: 
+    {semantic_analyser.get_possible_verifications()}\n
     The generated scenario should be in a JSON format. Each step of the 
     scenario is a JSON object:\n
-    {{ 
-        "action": "<action string>", 
-        "component": "<component name>", 
-        "verification": "<verification string>",
-        "value": "<text value of component, if any>"
-    }}\n 
-    Each filed in JSON is required!
+    {{\n 
+        "action": "<action string>",\n 
+        "component": "<component name>",\n 
+        "verification": "<verification string>",\n
+        "value": "<text value of component, if any>"\n
+    }}\n
+    Each field in JSON is required!\n
     Keep test steps as simple, short as 
     possible. Per one step verify only one component. Use terms from widget 
-    description. As user actions use these verbs: click, verify.\n 
-    The list of verification verbs: displayed, not displayed, present, not 
-    present, page is opened, <component name> text is, <component name> text 
-    contains. Use verbs that are concrete, not ambiguous or abstract. 
+    description.
     No need to mention opening the webpage as a first step. 
     'page is opened' is not a component. If you generate a step where page
     is opened, make sure to append a step to navigate back. 
-    If you generate a step where user click on link, make sure to append a 
-    step to navigate back.\n
+    If you generate a step where user click on link which opens a page, 
+    make sure to append a step to navigate back.\n
     Just respond with JSON, don't write any comments"""
 
 
-example_from_user_prompt="""
+example_from_user_prompt = """
 Here is an example of generated scenario.
 {
   "scenario": [

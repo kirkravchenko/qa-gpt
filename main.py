@@ -170,9 +170,9 @@ def populate_clicked_element(web_element):
         pass
 
 
-def assert_link_transition(clicked_element):
+def assert_link_transition(element_clicked):
     actual = get_url_without_protocol(driver.current_url)
-    expected = get_url_without_protocol(clicked_element.href)
+    expected = get_url_without_protocol(element_clicked.href)
     assert actual == expected
     populate_visited_page_info()
 
