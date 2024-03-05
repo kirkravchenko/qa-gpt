@@ -1,6 +1,5 @@
 from openai import OpenAI
 from jproperties import Properties
-import json
 import semantic_analyser
 
 def get_openai_property(prop):

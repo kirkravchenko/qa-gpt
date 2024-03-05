@@ -1,72 +1,92 @@
 [
     {
         "action": "verify",
-        "component": "'author icon'",
-        "verification": "is displayed"
+        "component": "author icon",
+        "verification": "is displayed",
+        "value": ""
     },
     {
         "action": "verify",
-        "component": "'default reviewer icon'",
-        "verification": "is displayed"
+        "component": "default reviewer icon",
+        "verification": "is displayed",
+        "value": ""
     },
     {
         "action": "verify",
-        "component": "'author name'",
-        "verification": "text is",
+        "component": "author name",
+        "verification": "is present",
         "value": "testauthor_active1"
     },
     {
         "action": "click",
-        "component": "'author name'"
+        "component": "author name",
+        "verification": "page is opened",
+        "value": ""
+    },
+    {
+        "action": "navigate back",
+        "component": "",
+        "verification": "",
+        "value": ""
     },
     {
         "action": "verify",
-        "component": "'page title contains'",
-        "value": "testauthor_active1"
-    },
-    {
-        "action": "navigate back"
-    },
-    {
-        "action": "verify",
-        "component": "'reviewer name'",
-        "verification": "text is",
+        "component": "reviewer name",
+        "verification": "is present",
         "value": "Mr Test Automation, MPH"
     },
     {
         "action": "click",
-        "component": "'reviewer name'"
+        "component": "reviewer name",
+        "verification": "page is opened",
+        "value": ""
+    },
+    {
+        "action": "navigate back",
+        "component": "",
+        "verification": "",
+        "value": ""
     },
     {
         "action": "verify",
-        "component": "'page title contains'",
-        "value": "Mr Test Automation, MPH"
-    },
-    {
-        "action": "navigate back"
-    },
-    {
-        "action": "verify",
-        "component": "'last updated date'",
+        "component": "last updated date",
         "verification": "text is",
         "value": "on November 30, 2018"
     },
     {
         "action": "verify",
-        "component": "'medically reviewed button'",
-        "verification": "is present"
+        "component": "medically reviewed button",
+        "verification": "is present",
+        "value": ""
     },
     {
         "action": "click",
-        "component": "'medically reviewed button'"
+        "component": "medically reviewed button",
+        "verification": "",
+        "value": ""
     },
     {
         "action": "verify",
-        "component": "'tooltip'",
-        "verification": "is present"
+        "component": "tooltip",
+        "verification": "is displayed",
+        "value": ""
+    },
+    {
+        "action": "verify",
+        "component": "tooltip link",
+        "verification": "is a link",
+        "value": ""
     },
     {
         "action": "click",
-        "component": "'tooltip close button'"
+        "component": "tooltip link",
+        "verification": "page is opened",
+        "value": ""
+    },
+    {
+        "action": "navigate back",
+        "component": "",
+        "verification": "",
+        "value": ""
     }
 ]

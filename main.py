@@ -42,6 +42,12 @@ def parse_json(json_string):
     return data
 
 
+def print_scenario(scenario):
+    print("\nGenerated scenario: ")
+    for step in scenario:
+        print(step)
+
+
 def test_byline():
     get(get_test_url())
     byline = widgets.Byline(
@@ -51,15 +57,53 @@ def test_byline():
         'on November 30, 2018', Medically reviewed button is present 
         with tooltip, tooltip contains all its possible components"""
     )
-    # scenario = get_scenario_from("byline/saved.feature")
-    scenario = gpt.generate_scenario_for(byline)
-    print(scenario)
-    scenario_json = parse_json(scenario)
-    # for step in scenario_json:
-    #     print(step)
-    perform(scenario, byline)
+    # scenario = get_json_scenario_from("byline/saved.json")
+    scenario = parse_json(gpt.generate_scenario_for(byline))
+    print_scenario(scenario)
+    perform_scenario(scenario, byline)
+    # perform(scenario, byline)
     time.sleep(1)
     driver.quit()
+
+
+def perform_scenario(scenario, widget):
+    print("\nPerforming steps")
+    for step in scenario:
+        perform_step(step, widget)
+
+
+def perform_step(step, widget):
+    print(step)
+    step = append_locator_to_step(step, widget)
+    try:
+        web_element = driver.find_element(by=step.by, value=step.selector)
+    except NoSuchElementException:
+        web_element = None
+    match step.action:
+        case semantic_analyser.Action.CLICK.value:
+            populate_clicked_element(web_element)
+            web_element.click()
+        case semantic_analyser.Action.DOUBLE_CLICK.value:
+            ActionChains(driver).double_click(web_element).perform()
+        case semantic_analyser.Action.VERIFY.value:
+            assert_step(step, web_element)
+        case semantic_analyser.Action.NAVIGATE_BACK.value:
+            driver.back()
+        case _:
+            pytest.fail(f"no action matched in step '{step}'")
+
+
+def append_locator_to_step(step, widget):
+    if step.component == "":
+        setattr(step, 'by', By.ID)
+        setattr(step, 'selector', "")
+        return step
+    by, selector = semantic_analyser.match_element_get_by(
+        step.component, widget.components
+    )
+    setattr(step, 'by', by)
+    setattr(step, 'selector', selector)
+    return step
 
 
 def perform(scenario, widget):
@@ -183,6 +227,43 @@ def perform_assert(verification, web_element, step):
             pytest.fail(f"no verification matched in step '{step}'")
 
 
+def assert_step(step, web_element):
+    match step.verification:
+        case semantic_analyser.VerificationItem.IS_DISPLAYED.value:
+            assert web_element.is_displayed()
+        case semantic_analyser.VerificationItem.NOT_DISPLAYED.value:
+            if web_element is None:
+                return
+            assert web_element.is_displayed() is False
+        case semantic_analyser.VerificationItem.NOT_PRESENT.value:
+            if web_element is None:
+                return
+            assert web_element.is_displayed() is False
+        case semantic_analyser.VerificationItem.IS_LINK.value:
+            assert web_element.get_attribute("href") is not None
+        case semantic_analyser.VerificationItem.TEXT_IS.value:
+            actual = web_element.text
+            expected = step.value
+            assert actual == expected
+        case semantic_analyser.VerificationItem.TEXT_PRESENT.value:
+            assert (get_web_element_by_text(step.value)
+                    .is_displayed())
+        case semantic_analyser.VerificationItem.IS_PRESENT.value:
+            assert web_element.is_displayed()
+        case semantic_analyser.VerificationItem.TEXT_CONTAINS.value:
+            actual = web_element.text
+            expected = step.value
+            assert expected in actual
+        case semantic_analyser.VerificationItem.PAGE_IS_OPENED.value:
+            assert_link_transition(clicked_element)
+        case semantic_analyser.VerificationItem.PAGE_TITLE_IS.value:
+            assert visited_page_info.title == step.value
+        case semantic_analyser.VerificationItem.PAGE_TITLE_CONTAINS.value:
+            assert visited_page_info.title in step.value
+        case _:
+            pytest.fail(f"no verification matched in step '{step}'")
+
+
 def get_web_element_by_text(expected_value):
     try:
         web_element = driver.find_element(
@@ -200,6 +281,11 @@ def get_web_element_by_text(expected_value):
 def get_scenario_from(path):
     with open(path) as steps:
         return steps.readlines()
+
+
+def get_json_scenario_from(path):
+    with open(path) as steps:
+        return json.loads(steps.read(), object_hook=lambda d: SimpleNamespace(**d))
 
 
 def close_pop_ups():

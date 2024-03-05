@@ -113,7 +113,7 @@ def get_by(step, components):
 
 def match_element_get_by(element_literal, components):
     for component in components:
-        if element_literal is component.name:
+        if element_literal == component.name:
             return component.by, component.selector
 
 
