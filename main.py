@@ -38,12 +38,15 @@ visited_page_info = PageInfo()
 
 
 def parse_json(json_string):
-    data = json.loads(json_string, object_hook=lambda d: SimpleNamespace(**d))
-    return data
+    if "```" in json_string:
+        json_string = json_string.split("```")[1].replace("json", "")
+    data = json.loads(json_string)
+    return data['scenario']
 
 
 def print_scenario(scenario):
     print("\nGenerated scenario: ")
+    print(scenario)
     for step in scenario:
         print(step)
 
@@ -76,10 +79,10 @@ def perform_step(step, widget):
     print(step)
     step = append_locator_to_step(step, widget)
     try:
-        web_element = driver.find_element(by=step.by, value=step.selector)
+        web_element = driver.find_element(by=step["by"], value=step["selector"])
     except NoSuchElementException:
         web_element = None
-    match step.action:
+    match step['action']:
         case semantic_analyser.Action.CLICK.value:
             populate_clicked_element(web_element)
             web_element.click()
@@ -94,15 +97,15 @@ def perform_step(step, widget):
 
 
 def append_locator_to_step(step, widget):
-    if step.component == "":
-        setattr(step, 'by', By.ID)
-        setattr(step, 'selector', "")
+    if step['component'] == "":
+        step['by'] = By.ID
+        step['selector'] = ""
         return step
     by, selector = semantic_analyser.match_element_get_by(
-        step.component, widget.components
+        step["component"], widget.components
     )
-    setattr(step, 'by', by)
-    setattr(step, 'selector', selector)
+    step['by'] = by
+    step['selector'] = selector
     return step
 
 
@@ -228,7 +231,7 @@ def perform_assert(verification, web_element, step):
 
 
 def assert_step(step, web_element):
-    match step.verification:
+    match step["verification"]:
         case semantic_analyser.VerificationItem.IS_DISPLAYED.value:
             assert web_element.is_displayed()
         case semantic_analyser.VerificationItem.NOT_DISPLAYED.value:
@@ -243,23 +246,23 @@ def assert_step(step, web_element):
             assert web_element.get_attribute("href") is not None
         case semantic_analyser.VerificationItem.TEXT_IS.value:
             actual = web_element.text
-            expected = step.value
+            expected = step["value"]
             assert actual == expected
         case semantic_analyser.VerificationItem.TEXT_PRESENT.value:
-            assert (get_web_element_by_text(step.value)
+            assert (get_web_element_by_text(step["value"])
                     .is_displayed())
         case semantic_analyser.VerificationItem.IS_PRESENT.value:
             assert web_element.is_displayed()
         case semantic_analyser.VerificationItem.TEXT_CONTAINS.value:
             actual = web_element.text
-            expected = step.value
+            expected = step["value"]
             assert expected in actual
         case semantic_analyser.VerificationItem.PAGE_IS_OPENED.value:
             assert_link_transition(clicked_element)
         case semantic_analyser.VerificationItem.PAGE_TITLE_IS.value:
-            assert visited_page_info.title == step.value
+            assert visited_page_info.title == step["value"]
         case semantic_analyser.VerificationItem.PAGE_TITLE_CONTAINS.value:
-            assert visited_page_info.title in step.value
+            assert visited_page_info.title in step["value"]
         case _:
             pytest.fail(f"no verification matched in step '{step}'")
 

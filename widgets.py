@@ -102,5 +102,8 @@ class Byline:
     {components_names}.\nAuthor name can be a link to the 
     author's page; reviewer name can be a link to reviewer's page. 
     'medically reviewed button' is a button that if you click on it, shows small 
-    tooltip. The button has label 'MEDICALLY REVIEWED'. That tooltip contains 
+    tooltip. This tooltip disappears after opening another page. 
+    'tooltip close button' isn't visible after opening another page. 
+    Don't try to verify tooltip if it's closed. 
+    The button has label 'MEDICALLY REVIEWED'. That tooltip contains 
     its own components listed above. Name components just as I listed before"""

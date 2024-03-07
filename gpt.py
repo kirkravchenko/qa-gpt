@@ -33,18 +33,58 @@ def prompt(widget):
     Properties of this particular widget: {widget.widget_specific_description} 
     I want you to generate one test scenario for this specific widget that I 
     can use as input for my Python method.
-    The list of possible action strings: {semantic_analyser.get_actions()}\n
+    The list of possible action strings: {semantic_analyser.get_actions()}
     The list of possible verification strings: 
-    {semantic_analyser.get_possible_verifications()}\n
+    {semantic_analyser.get_possible_verifications()}
+    Here is a schema of scenario:
+    {{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "properties": {{
+    "scenario": {{
+      "type": "array",
+      "items": [
+        {{
+          "type": "object",
+          "properties": {{
+            "action": {{
+              "type": "string"
+            }},
+            "component": {{
+              "type": "string"
+            }},
+            "verification": {{
+              "type": "string"
+            }},
+            "value": {{
+              "type": "string"
+            }}
+          }},
+          "required": [
+            "action",
+            "component",
+            "verification",
+            "value"
+          ]
+        }}
+      ]
+    }}
+  }},
+  "required": [
+    "scenario"
+  ]
+}}
     The generated scenario should be in a JSON format. Each step of the 
-    scenario is a JSON object:\n
-    {{\n 
-        "action": "<action string>",\n 
-        "component": "<component name>",\n 
-        "verification": "<verification string>",\n
-        "value": "<text value of component, if any>"\n
-    }}\n
-    Each field in JSON is required!\n
+    scenario is a JSON object:
+    {{ 
+        "action": "<action string>", 
+        "component": "<component name>", 
+        "verification": "<verification string>",
+        "value": "<text value of component, if any>"
+    }}
+    Each field in JSON is required!
+    Generate minimum 12 steps per scenario, maximum 30 steps.
+    Generate scenario inside triple quotes.
     Keep test steps as simple, short as 
     possible. Per one step verify only one component. Use terms from widget 
     description.
@@ -52,7 +92,10 @@ def prompt(widget):
     'page is opened' is not a component. If you generate a step where page
     is opened, make sure to append a step to navigate back. 
     If you generate a step where user click on link which opens a page, 
-    make sure to append a step to navigate back.\n
+    make sure to append a step to navigate back.
+    Each step contains ONLY ONE verification! This step is an error, since 
+    it contains 2 verifications: in 'component' and in 'verification'.
+    {{'action': 'verify', 'component': 'page is opened', 'verification': 'page title contains', 'value': ''}}
     Just respond with JSON, don't write any comments"""
 
 
@@ -146,8 +189,8 @@ Here is an example of generated scenario.
     },
     {
       "action": "verify",
-      "component": "page is opened",
-      "verification": "is true",
+      "component": "",
+      "verification": "page is opened",
       "value": ""
     },
     {
